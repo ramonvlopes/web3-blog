@@ -34,6 +34,12 @@
       ],
       "@abi/*": [
         "./src/abi/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
       ]
     },
     "moduleResolution": "node"

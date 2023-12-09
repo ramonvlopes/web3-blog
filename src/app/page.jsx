@@ -1,36 +1,99 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react";
-import { getContract } from "../../ethereum";
-import Blog from "@abi/Blog.json";
 import PostCard from "@components/PostCard";
 import Pagination from "@components/Pagination";
+import { useEthers } from "@hooks/useEthers";
+import Blog from "@abi/Blog.json";
+// import { getContract } from "../../ethereum";
+import { CONTRACT_ADDRESS } from "@common/constants/contract";
+import { getContract } from "@utils/contract";
+import { Wallet } from "ethers";
 
 export default function Home() {
-  const [posts, setPosts] = useState(0);
-  const [contract, setContract] = useState();
+  const { provider } = useEthers();
+  // const [posts, setPosts] = useState(0);
 
-  useEffect(() => {
-    async function initContract() {
-      const blogOperations = getContract(
-        "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        Blog,
-        0 // Use the first account as the signer
-      );
+  // useEffect(() => {
+  //   async function initContract() {
+  //     const { provider, signer } = await initializeEthers();
 
-      setContract(blogOperations);
+  //     const contractInstance = new Contract(
+  //       "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  //       Blog,
+  //       provider
+  //     );
 
-      const initialCount = await blogOperations.viewAllPosts();
-      setPosts(initialCount);
+  //     const contractInstanceSend = new Contract(
+  //       "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  //       Blog,
+  //       signer
+  //     );
+
+  //     const transaction = await contractInstanceSend.deposit(
+  //       "http://127.0.0.1:8545/",
+  //       { value: parseEther("0.1") }
+  //     );
+  //     await transaction.wait(1);
+
+  //     setSignerContract(contractInstanceSend);
+  //     setContract(contractInstance);
+
+  //     const restaurantsArray = await contractInstanceSend.viewAllPosts();
+  //     console.log(restaurantsArray);
+  //   }
+
+  //   initContract();
+  // }, []);
+
+  const createPost = async () => {
+    const signer = new Wallet(
+      "0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e",
+      provider
+    );
+
+    if (!signer) {
+      alert("Signer not available");
+      return;
     }
-  
-    initContract();
-  }, []);
 
-  console.log('posts', posts)
+    const contract = getContract(signer);
+
+    try {
+      const tx = await contract.createPost("post.title", "post.content");
+      await tx.wait();
+      alert("Restaurant added successfully!");
+    } catch (error) {
+      console.error("Error adding restaurant:", error);
+      alert("Failed to add restaurant");
+    }
+  };
+
+  const viewPost = async () => {
+    const contract = getContract(provider);
+
+    const initialCount = await contract.viewAllPosts();
+
+    console.log(initialCount);
+    // setPosts(initialCount);
+  };
 
   return (
     <main className="grid gap-8 grid-cols-3 p-4 sm:ml-64 mt-16">
+      <button
+        onClick={createPost}
+        type="button"
+        className="text-white bg-blue-700"
+      >
+        Create
+      </button>
+      <button
+        onClick={viewPost}
+        type="button"
+        className="text-white bg-blue-700"
+      >
+        View
+      </button>
+
       <PostCard />
       <PostCard />
       <PostCard />

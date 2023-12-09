@@ -1,6 +1,6 @@
-import { ethers } from "ethers";
+const { ethers, JsonRpcProvider } = require('ethers')
 
-const localProvider = new ethers.providers.JsonRpcProvider(
+const localProvider = new JsonRpcProvider(
   "http://localhost:8545"
 );
 
