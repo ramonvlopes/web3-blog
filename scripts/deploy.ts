@@ -12,7 +12,7 @@ async function main(): Promise<string> {
 
 main()
   .then((address) => {
-    console.log(address); // This will print the address to stdout
+    console.log(address);
   })
   .catch((error) => {
     console.error(error);
