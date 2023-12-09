@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Wallet } from "ethers";
-import { Editor, EditorState } from "draft-js";
+import { toast } from 'react-toastify';
 import { useEthers } from "@hooks/useEthers";
 import { getContract } from "@utils/contract";
 
@@ -18,7 +18,6 @@ export default function NewPost() {
     );
 
     if (!signer) {
-      alert("Signer not available");
       return;
     }
 
@@ -27,16 +26,16 @@ export default function NewPost() {
     try {
       const tx = await contract.createPost(title, content);
       await tx.wait();
-      alert("Restaurant added successfully!");
+
+      toast.success('Created new post!')
     } catch (error) {
-      console.error("Error adding restaurant:", error);
-      alert("Failed to add restaurant");
+      toast.error(`Error adding the post: ${error}`);
     }
   };
 
   return (
     <main className="p-4 sm:ml-64 mt-16">
-      <form className="max-w-lg mx-auto">
+      <div className="max-w-lg mx-auto">
         <div className="mb-5">
           <label
             htmlFor="email"
@@ -61,7 +60,6 @@ export default function NewPost() {
             type="text"
             onChange={(e) => setContent(e.target.value)}
             className="border border-gray-300 text-gray-900 block w-full rounded-lg p-2.5 dark:border-gray-600 dark:placeholder-gray-400"
-            required
           />
         </div>
         <button
@@ -70,7 +68,7 @@ export default function NewPost() {
         >
           Create new post
         </button>
-      </form>
+      </div>
     </main>
   );
 }
